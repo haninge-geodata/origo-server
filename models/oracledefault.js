@@ -27,6 +27,6 @@ var oracleDefault = function oracleDefault(queryString, queryOptions) {
     "ORDER BY " + searchField + "";
 
   return searchString;
-}
+};
 
 module.exports = oracleDefault;

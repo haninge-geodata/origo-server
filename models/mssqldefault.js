@@ -24,6 +24,6 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions, defaultLimit
     " ORDER BY " + searchField + "";
 
   return searchString;
-}
+};
 
 module.exports = mssqlDefault;
