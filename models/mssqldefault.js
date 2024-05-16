@@ -8,8 +8,10 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions, defaultLimit
   if (queryOptions.searchField) {
     sqlSearchFields = queryOptions.searchField;
     sqlSearchFieldsFilter = "LOWER(" + queryOptions.searchField + ") LIKE LOWER('" + condition + "%')";
-  } else if (queryOptions.searchFields) {
-    sqlSearchFields = "CONCAT(" + queryOptions.searchFields.filter((e) => e).join(", ") + ")";
+  } else if (queryOptions.searchFields.filter((e) => e)) {
+    sqlSearchFields = "CONCAT(" + queryOptions.searchFields.filter((e) => e)[0] + ", ' (', " +
+      queryOptions.searchFields.filter((e) => e).slice(1).join(", ', ', ") +
+      ", ')')";
     sqlSearchFieldsFilter = "LOWER(" + 
       queryOptions.searchFields.filter((e) => e).join(") LIKE LOWER('" + condition + "%')\n   OR LOWER(") + 
       ") LIKE LOWER('" + condition + "%')";
