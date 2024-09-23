@@ -32,7 +32,7 @@ module.exports = async function access_token(req, res) {
         path: '/',
         partitioned: true,
         secure: true,
-        sameSite: 'None'
+        sameSite: 'Strict'
       });
       res.cookie('OIDC_ACCESS_TOKEN_EXPIRES', token_set.expires_at, {
         domain: conf.auth.accessTokenCookieDomain,
@@ -41,7 +41,7 @@ module.exports = async function access_token(req, res) {
         path: '/',
         partitioned: true,
         secure: true,
-        sameSite: 'None'
+        sameSite: 'Strict'
       });
     }
     const user_info = await client.userinfo(token_set.access_token);
