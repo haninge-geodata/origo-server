@@ -22,16 +22,18 @@ module.exports = async function access_token(req, res) {
           expires: new Date(token_set.expires_at * 1000),
           httpOnly: true,
           path: '/',
+          partitioned: true,
           secure: true,
-          sameSite: 'Strict'
+          sameSite: 'None'
         });
         res.cookie('OIDC_ACCESS_TOKEN_EXPIRES', token_set.expires_at, {
           domain: conf.auth.accessTokenCookieDomain,
           expires: new Date(token_set.expires_at * 1000),
           httpOnly: true,
           path: '/',
+          partitioned: true,
           secure: true,
-          sameSite: 'Strict'
+          sameSite: 'None'
         });
       }
     } else if (refresh_token && refresh_token.length) {
