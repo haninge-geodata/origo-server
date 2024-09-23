@@ -19,7 +19,15 @@ module.exports = async function access_token(req, res) {
       if (conf.auth.setAccessTokenCookie) {
         res.cookie('OIDC_ACCESS_TOKEN', token_set.access_token, {
           domain: conf.auth.accessTokenCookieDomain,
-          expires: token_set.expires_at,
+          expires: new Date(token_set.expires_at * 1000),
+          httpOnly: true,
+          path: '/',
+          secure: true,
+          sameSite: 'Strict'
+        });
+        res.cookie('OIDC_ACCESS_TOKEN_EXPIRES', token_set.expires_at, {
+          domain: conf.auth.accessTokenCookieDomain,
+          expires: new Date(token_set.expires_at * 1000),
           httpOnly: true,
           path: '/',
           secure: true,
