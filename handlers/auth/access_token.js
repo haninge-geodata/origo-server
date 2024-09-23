@@ -15,27 +15,6 @@ module.exports = async function access_token(req, res) {
         code: code,
         redirect_uri: conf.auth.redirect_uri
       });
-      
-      if (conf.auth.setAccessTokenCookie) {
-        res.cookie('OIDC_ACCESS_TOKEN', token_set.access_token, {
-          domain: conf.auth.accessTokenCookieDomain,
-          expires: new Date(token_set.expires_at * 1000),
-          httpOnly: true,
-          path: '/',
-          partitioned: true,
-          secure: true,
-          sameSite: 'None'
-        });
-        res.cookie('OIDC_ACCESS_TOKEN_EXPIRES', token_set.expires_at, {
-          domain: conf.auth.accessTokenCookieDomain,
-          expires: new Date(token_set.expires_at * 1000),
-          httpOnly: true,
-          path: '/',
-          partitioned: true,
-          secure: true,
-          sameSite: 'None'
-        });
-      }
     } else if (refresh_token && refresh_token.length) {
       token_set = await client.grant({
         grant_type: 'refresh_token',
@@ -43,6 +22,27 @@ module.exports = async function access_token(req, res) {
       });
     } else {
       res.status(400).send('Bad Request: Neither code nor refresh token found.');
+    }
+
+    if (conf.auth.setAccessTokenCookie) {
+      res.cookie('OIDC_ACCESS_TOKEN', token_set.access_token, {
+        domain: conf.auth.accessTokenCookieDomain,
+        expires: new Date(token_set.expires_at * 1000),
+        httpOnly: true,
+        path: '/',
+        partitioned: true,
+        secure: true,
+        sameSite: 'None'
+      });
+      res.cookie('OIDC_ACCESS_TOKEN_EXPIRES', token_set.expires_at, {
+        domain: conf.auth.accessTokenCookieDomain,
+        expires: new Date(token_set.expires_at * 1000),
+        httpOnly: true,
+        path: '/',
+        partitioned: true,
+        secure: true,
+        sameSite: 'None'
+      });
     }
     const user_info = await client.userinfo(token_set.access_token);
     res.json({
