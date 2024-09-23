@@ -15,6 +15,17 @@ module.exports = async function access_token(req, res) {
         code: code,
         redirect_uri: conf.auth.redirect_uri
       });
+      
+      if (conf.auth.setAccessTokenCookie) {
+        res.cookie('OIDC_ACCESS_TOKEN', token_set.access_token, {
+          domain: conf.auth.accessTokenCookieDomain,
+          expires: token_set.expires_at,
+          httpOnly: true,
+          path: '/',
+          secure: true,
+          sameSite: 'Strict'
+        });
+      }
     } else if (refresh_token && refresh_token.length) {
       token_set = await client.grant({
         grant_type: 'refresh_token',
