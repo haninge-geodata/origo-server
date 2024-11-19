@@ -3,13 +3,18 @@ var dbConnectors = require('../lib/dbconnectors');
 var searchModel = require('../conf/dbconfig').models.search;
 var dbType = require('../lib/dbtype');
 var sendResponse = require('../lib/sendresponse');
+var sendError = require('../lib/senderror');
 var model = require('../models/dbmodels');
 
 var search = function(req, res) {
+  // Exit if a query was made to a non-root endpoint that does not match a search model i dbconfig.js
+  if (req.params.searchModel && !searchModel[req.params.searchModel]) {
+    return sendError(res, 404, 'No search model named \'' + req.params.searchModel + '\'');
+  }
+
   var query = req.query.q;
   var connectors = dbConfig.connectors.search;
-  var multiSearchModels = Object.values(searchModel);
- 
+  var multiSearchModels = req.params.searchModel ? [searchModel[req.params.searchModel]] : Object.values(searchModel);
   
   var finishedModels = 0;
   var mergedResult = [];
