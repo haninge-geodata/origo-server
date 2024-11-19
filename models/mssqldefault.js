@@ -16,13 +16,14 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
       queryOptions.searchFields.filter((e) => e).join(") LIKE LOWER('" + condition + "%')\n   OR LOWER(") + 
       ") LIKE LOWER('" + condition + "%')";
   }
+  var customType = queryOptions.customType;
   var fields = queryOptions.fields;
   var sqlFields = fields ? fields.join(',') + "," : "";
   var geometryField = queryOptions.geometryName || "geom";
   var useCentroid = queryOptions.hasOwnProperty("useCentroid") ? queryOptions.useCentroid : true;
   var wkt = useCentroid ? geometryField + ".STPointOnSurface().ToString() AS GEOM " + " " :
     geometryField + ".ToString() AS GEOM " + " ";
-  var type = " '" + table + "'" + " AS TYPE, ";
+  var type = " '" + customType ?? table + "'" + " AS TYPE, ";
   var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS "TITLE", ' : '';
   var searchString;
   var limit = queryOptions.limit ? "TOP " + queryOptions.limit.toString() + " " : "";
