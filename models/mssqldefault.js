@@ -1,4 +1,4 @@
-var mssqlDefault = function mssqlDefault(queryString, queryOptions, defaultLimit) {
+var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
   var schema = queryOptions.schema;
   var database = queryOptions.database;
   var table = queryOptions.table;
@@ -25,8 +25,7 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions, defaultLimit
   var type = " '" + table + "'" + " AS TYPE, ";
   var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS "TITLE", ' : '';
   var searchString;
-  var limitNumber = queryOptions.limit || defaultLimit || 1000;
-  var limit = "TOP " + limitNumber.toString() + " ";
+  var limit = queryOptions.limit ? "TOP " + queryOptions.limit.toString() + " " : "";
 
   searchString =
     "SELECT " + limit +
@@ -40,6 +39,6 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions, defaultLimit
     " ORDER BY " + sqlSearchFields;
 
   return searchString;
-}
+};
 
 module.exports = mssqlDefault;
