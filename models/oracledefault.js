@@ -10,6 +10,7 @@ var oracleDefault = function oracleDefault(queryString, queryOptions) {
     "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + geometryField + ")) AS GEOM";
   var sqlFields = fields ? fields.join(',') + "," : "";
   var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS TITLE, ' : '';
+  var type = " '" + table + "'" + " AS type, ";
   var condition = queryString;
   var searchString;
   var sdo_geom_metadata;
@@ -27,6 +28,7 @@ var oracleDefault = function oracleDefault(queryString, queryOptions) {
     sqlFields +
     "'" + table + "'" + " AS type," +
     title +
+    type +
     wkt + " " +
     "FROM " + schema + "." + table + ", user_sdo_geom_metadata m " +
     "WHERE " + sdo_geom_metadata + "' AND lower(" + searchField + ") LIKE lower('" + condition + "%')" + " " +
@@ -34,6 +36,6 @@ var oracleDefault = function oracleDefault(queryString, queryOptions) {
     limit;
 
   return searchString;
-}
+};
 
 module.exports = oracleDefault;

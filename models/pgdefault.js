@@ -30,6 +30,6 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
     limit + ';';
 
   return searchString;
-}
+};
 
 module.exports = pgDefault;
