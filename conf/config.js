@@ -146,5 +146,6 @@ module.exports = {
     grant_type: 'client_credentials',
     scope: 'am_application_scope default',
     query: '{"feature.typ": {"eq": "detaljplan"}, "detaljplan.objektidentitet": {"eq": "$planid$"}, "detaljplan.status": {"in": ["laga kraft"]}}'
-  }
+  },
+  trustProxy: false
 }
