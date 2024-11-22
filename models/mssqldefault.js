@@ -23,8 +23,8 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
   var useCentroid = queryOptions.hasOwnProperty("useCentroid") ? queryOptions.useCentroid : true;
   var wkt = useCentroid ? geometryField + ".STPointOnSurface().ToString() AS GEOM " + " " :
     geometryField + ".ToString() AS GEOM " + " ";
-  var type = " '" + customType ?? table + "'" + " AS TYPE, ";
   var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS "TITLE", ' : '';
+  var type = " '" + (customType ?? table) + "'" + " AS TYPE, ";
   var searchString;
   var limit = queryOptions.limit ? "TOP " + queryOptions.limit.toString() + " " : "";
 
