@@ -6,7 +6,7 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
   var sqlSearchFields;
   var sqlSearchFieldsFilter;
   if (queryOptions.searchField) {
-    sqlSearchFields = queryOptions.searchField;
+    sqlSearchFields = "CAST(" + queryOptions.searchField + " AS varchar(255))";
     sqlSearchFieldsFilter = "LOWER(" + queryOptions.searchField + ") LIKE LOWER('" + condition + "%')";
   } else if (queryOptions.searchFields.filter((e) => e)) {
     sqlSearchFields = "CONCAT(" + queryOptions.searchFields.filter((e) => e)[0] + ", ' (', " +
