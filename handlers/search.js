@@ -7,14 +7,26 @@ var sendError = require('../lib/senderror');
 var model = require('../models/dbmodels');
 
 var search = function(req, res) {
-  // Exit if a query was made to a non-root endpoint that does not match a search model i dbconfig.js
-  if (req.params.searchModel && !searchModel[req.params.searchModel]) {
-    return sendError(res, 404, 'No search model named \'' + req.params.searchModel + '\'');
-  }
-
   var query = req.query.q;
   var connectors = dbConfig.connectors.search;
-  var multiSearchModels = req.params.searchModel ? [searchModel[req.params.searchModel]] : Object.values(searchModel);
+  var multiSearchModels = Object.values(searchModel);
+
+  // If a query was made with a 'tags' query parameter (e g origoserver/search?tags=tag1,tag2,etc),
+  // then query only the search models which have at least one tag matching a tag supplied in the parameter.
+  if (req.query.tags) {
+    var searchTagArray = req.query.tags.split(',');
+    multiSearchModels = multiSearchModels.filter((model) => {
+      if (model.tags && Array.isArray(model.tags)) {
+        var relevantTagsInModel = model.tags.filter((tag) => searchTagArray.includes(tag));
+        return (relevantTagsInModel.length > 0);
+      }
+      else return false;
+    });
+    // Exit if the tags supplied does not match any tags on any search models in dbconfig.js
+    if (multiSearchModels.length === 0) {
+      return sendError(res, 404, 'No search model with tags \'' + searchTagArray.join(', ') + '\'');
+    }
+  }
   
   var finishedModels = 0;
   var mergedResult = [];
