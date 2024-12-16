@@ -12,10 +12,10 @@ var search = function(req, res) {
   var multiSearchModels = Object.values(searchModel);
   var limit = dbConfig.limit || 100;
 
-  // If a query was made to a non-root endpoint (e g origoserver/search/comma-separated-tags),
-  // then query only the search models which have at least one tag matching a tag supplied in the URL.
-  if (req.params.searchTags) {
-    var searchTagArray = req.params.searchTags.split(',');
+  // If a query was made with a 'tags' query parameter (e g origoserver/search?tags=tag1,tag2,etc),
+  // then query only the search models which have at least one tag matching a tag supplied in the parameter.
+  if (req.query.tags) {
+    var searchTagArray = req.query.tags.split(',');
     multiSearchModels = multiSearchModels.filter((model) => {
       if (model.tags && Array.isArray(model.tags)) {
         var relevantTagsInModel = model.tags.filter((tag) => searchTagArray.includes(tag));

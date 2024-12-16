@@ -59,7 +59,7 @@ module.exports = {
       },
       search: {
         search: {
-           tags: ["default"], // Sub-models which include any tags supplied in the route parameter origoserver/search/[tag1,tag2,etc] will be queried. 
+           tags: ["default"], // Sub-models which include any tags supplied in the query parameter 'tags' (e g origoserver/search?tags=tag1,tag2,etc) will be queried.
            tables: [
               {
                  table: 'fastighetsytor',
