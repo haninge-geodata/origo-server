@@ -8,12 +8,12 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions, defaultLimit
   if (queryOptions.searchField) {
     sqlSearchFields = queryOptions.searchField;
     sqlSearchFieldsFilter = "LOWER(" + queryOptions.searchField + ") LIKE LOWER('" + condition + "%')";
-  } else if (queryOptions.searchFields.filter((e) => e)) {
-    sqlSearchFields = "CONCAT(" + queryOptions.searchFields.filter((e) => e)[0] + ", ' (', " +
-      queryOptions.searchFields.filter((e) => e).slice(1).join(", ', ', ") +
-      ", ')')";
+  } else if (queryOptions.searchFields?.filter((field) => field)) {
+    sqlSearchFields = "CONCAT(STUFF(CONCAT_WS(', ', " + queryOptions.searchFields.filter((field) => field).join(", ") + "), LEN(COALESCE(" +
+      queryOptions.searchFields.filter((field) => field).join(", ") +
+      ")) + 1, 2, ' ('), ')')";
     sqlSearchFieldsFilter = "LOWER(" + 
-      queryOptions.searchFields.filter((e) => e).join(") LIKE LOWER('" + condition + "%')\n   OR LOWER(") + 
+      queryOptions.searchFields.filter((field) => field).join(") LIKE LOWER('" + condition + "%') OR LOWER(") + 
       ") LIKE LOWER('" + condition + "%')";
   }
   var fields = queryOptions.fields;
