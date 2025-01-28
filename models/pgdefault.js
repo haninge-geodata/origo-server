@@ -1,9 +1,29 @@
 var pgDefault = function pgDefault(queryString, queryOptions, defaultLimit) {
   var schema = queryOptions.schema;
   var table = queryOptions.table;
-  var searchField = queryOptions.searchField;
   var gid = queryOptions.gid || 'gid';
-  var sqlSearchField = searchField ? 'CAST("' + table + '"."' + searchField + '" AS TEXT) AS "NAMN",' : "";
+  var condition = queryString;
+  var sqlSearchFields;
+  var sqlSearchFieldsFilter;
+  if (queryOptions.searchField) {
+    sqlSearchFields = 'CAST("' + table + '"."' + queryOptions.searchField + '" AS TEXT)';
+    sqlSearchFieldsFilter = 'LOWER(CAST("' + table + '"."' + sqlSearchFields + '"' + ' AS TEXT)) ILIKE LOWER(\'' + condition + '%\')';
+  } else if (queryOptions.searchFields?.filter((field) => field)) {
+    sqlSearchFields = 'CONCAT(overlay(CONCAT_WS(\', \', ' + 
+      queryOptions.searchFields.filter((field) => field)
+        .map((field) => '"' + table + '"."' + field + '"')
+        .join(', ') +
+      ') PLACING \' (\' FROM LENGTH(COALESCE(' +
+      queryOptions.searchFields.filter((field) => field)
+        .map((field) => '"' + table + '"."' + field + '"')
+        .join(', ') +
+      ')) + 1 FOR 2), \')\')';
+    sqlSearchFieldsFilter = 'LOWER(' + 
+      queryOptions.searchFields.filter((e) => e)
+        .map((field) => '"' + table + '"."' + field + '"')
+        .join(') LIKE LOWER(\'' + condition + '%\') OR LOWER(') + 
+      ') LIKE LOWER(\'' + condition + '%\')';
+  }
   var fields = queryOptions.fields;
   var geometryField = queryOptions.geometryName || "geom";
   var useCentroid = queryOptions.hasOwnProperty("useCentroid") ? queryOptions.useCentroid : true;
@@ -18,14 +38,14 @@ var pgDefault = function pgDefault(queryString, queryOptions, defaultLimit) {
 
   searchString =
     'SELECT ' +
-    sqlSearchField +
+    sqlSearchFields + ' AS "NAMN",' +
     ' "' + table + '"."' + gid + '" AS "GID", ' +
     sqlFields +
     type +
     wkt +
     ' FROM ' + schema + '."' + table + '"' +
-    ' WHERE LOWER(CAST("' + table + '"."' + searchField + '"' + " AS TEXT)) ILIKE LOWER('" + condition + "%')" +
-    ' ORDER BY "' + table + '"."' + searchField + '"' +
+    ' WHERE ' + sqlSearchFieldsFilter +
+    ' ORDER BY ' + sqlSearchFields +
     limit + ';';
 
   return searchString;
