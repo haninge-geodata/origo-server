@@ -30,9 +30,9 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
   var useCentroid = queryOptions.hasOwnProperty('useCentroid') ? queryOptions.useCentroid : true;
   var wkt = useCentroid ? 'ST_AsText(ST_PointOnSurface(' + table + '."' + geometryField + '")) AS "GEOM" ' :
     'ST_AsText("' + table + '"."' + geometryField + '") AS "GEOM" ';
-  var sqlFields = fields ? fields.join(',') + ',' : '';
-  var title = queryOptions.title ? ' \'' + queryOptions.title + '\'' + ' AS "TITLE", ' : '';
-  var type = ' \'' + (customType ?? table) + '\'' + ' AS "TYPE", ';
+  var sqlFields = fields ? fields.join(',') + "," : "";
+  var type = " '" + (customType ?? table) + "'" + ' AS "TYPE", ';
+  var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS "TITLE", ' : '';
   var searchString;
   var limit = queryOptions.limit ? ' LIMIT ' + queryOptions.limit.toString() + ' ' : '';
 

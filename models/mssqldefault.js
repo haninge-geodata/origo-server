@@ -6,12 +6,12 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
   var sqlSearchFields;
   var sqlSearchFieldsFilter;
   if (queryOptions.searchField) {
-    sqlSearchFields = "CAST(" + queryOptions.searchField + " AS varchar(255))";
+    sqlSearchFields = "CAST(" + queryOptions.searchField + " AS varchar(255)) AS NAMN,";
     sqlSearchFieldsFilter = "LOWER(" + queryOptions.searchField + ") LIKE LOWER('" + condition + "%')";
   } else if (queryOptions.searchFields?.filter((field) => field)) {
     sqlSearchFields = "CONCAT(STUFF(CONCAT_WS(', ', " + queryOptions.searchFields.filter((field) => field).join(", ") + "), LEN(COALESCE(" +
       queryOptions.searchFields.filter((field) => field).join(", ") +
-      ")) + 1, 2, ' ('), ')')";
+      ")) + 1, 2, ' ('), ')') AS NAMN,";
     sqlSearchFieldsFilter = "LOWER(" + 
       queryOptions.searchFields.filter((field) => field).join(") LIKE LOWER('" + condition + "%') OR LOWER(") + 
       ") LIKE LOWER('" + condition + "%')";
@@ -30,7 +30,7 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
 
   searchString =
     "SELECT " + limit +
-    sqlSearchFields + " AS NAMN," + 
+    sqlSearchFields + 
     sqlFields +
     type +
     title +

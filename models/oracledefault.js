@@ -10,8 +10,8 @@ var oracleDefault = function oracleDefault(queryString, queryOptions) {
   var wkt = useCentroid ? "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(SDO_GEOM.SDO_CENTROID(" + geometryField + ", m.diminfo))) AS GEOM" :
     "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + geometryField + ")) AS GEOM";
   var sqlFields = fields ? fields.join(',') + "," : "";
-  var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS TITLE, ' : '';
   var type = "'" + (customType ?? table) + "' AS type,";
+  var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS TITLE, ' : '';
   var condition = queryString;
   var searchString;
   var sdo_geom_metadata;
@@ -27,8 +27,8 @@ var oracleDefault = function oracleDefault(queryString, queryOptions) {
     "SELECT " +
     sqlSearchField +
     sqlFields +
-    title +
     type +
+    title +
     wkt + " " +
     "FROM " + schema + "." + table + ", user_sdo_geom_metadata m " +
     "WHERE " + sdo_geom_metadata + "' AND lower(" + searchField + ") LIKE lower('" + condition + "%')" + " " +
