@@ -12,16 +12,16 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
   } else if (queryOptions.searchFields?.filter((field) => field)) {
     sqlSearchFields = 'CONCAT(overlay(CONCAT_WS(\', \', ' + 
       queryOptions.searchFields.filter((field) => field)
-        .map((field) => '"' + table + '"."' + field + '"')
+        .map((field) => 'CAST("' + table + '"."' + field + '" AS TEXT)')
         .join(', ') +
       ') PLACING \' (\' FROM LENGTH(COALESCE(' +
       queryOptions.searchFields.filter((field) => field)
-        .map((field) => '"' + table + '"."' + field + '"')
+        .map((field) => 'CAST("' + table + '"."' + field + '" AS TEXT)')
         .join(', ') +
       ')) + 1 FOR 2), \')\')';
     sqlSearchFieldsFilter = 'LOWER(' + 
       queryOptions.searchFields.filter((e) => e)
-        .map((field) => '"' + table + '"."' + field + '"')
+        .map((field) => 'CAST("' + table + '"."' + field + '" AS TEXT)')
         .join(') LIKE LOWER(\'' + condition + '%\') OR LOWER(') + 
       ') LIKE LOWER(\'' + condition + '%\')';
   }
