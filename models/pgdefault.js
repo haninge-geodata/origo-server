@@ -6,22 +6,22 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
   var condition = queryString;
   var sqlSearchFields;
   var sqlSearchFieldsFilter;
-  if (queryOptions.searchField) {
-    sqlSearchFields = 'CAST("' + table + '"."' + queryOptions.searchField + '" AS TEXT)';
-    sqlSearchFieldsFilter = 'LOWER(CAST("' + table + '"."' + sqlSearchFields + '"' + ' AS TEXT)) ILIKE LOWER(\'' + condition + '%\')';
+  if (queryOptions.searchField || queryOptions.searchFields?.length === 1) {
+    sqlSearchFields = 'CAST("' + table + '"."' + (queryOptions.searchField || queryOptions.searchFields[0]) + '" AS TEXT)';
+    sqlSearchFieldsFilter = 'LOWER(' + sqlSearchFields + ') ILIKE LOWER(\'' + condition + '%\')';
   } else if (queryOptions.searchFields?.filter((field) => field)) {
     sqlSearchFields = 'CONCAT(overlay(CONCAT_WS(\', \', ' + 
       queryOptions.searchFields.filter((field) => field)
-        .map((field) => '"' + table + '"."' + field + '"')
+        .map((field) => 'CAST("' + table + '"."' + field + '" AS TEXT)')
         .join(', ') +
       ') PLACING \' (\' FROM LENGTH(COALESCE(' +
       queryOptions.searchFields.filter((field) => field)
-        .map((field) => '"' + table + '"."' + field + '"')
+        .map((field) => 'CAST("' + table + '"."' + field + '" AS TEXT)')
         .join(', ') +
       ')) + 1 FOR 2), \')\')';
     sqlSearchFieldsFilter = 'LOWER(' + 
       queryOptions.searchFields.filter((e) => e)
-        .map((field) => '"' + table + '"."' + field + '"')
+        .map((field) => 'CAST("' + table + '"."' + field + '" AS TEXT)')
         .join(') LIKE LOWER(\'' + condition + '%\') OR LOWER(') + 
       ') LIKE LOWER(\'' + condition + '%\')';
   }
@@ -30,8 +30,8 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
   var useCentroid = queryOptions.hasOwnProperty('useCentroid') ? queryOptions.useCentroid : true;
   var wkt = useCentroid ? 'ST_AsText(ST_PointOnSurface(' + table + '."' + geometryField + '")) AS "GEOM" ' :
     'ST_AsText("' + table + '"."' + geometryField + '") AS "GEOM" ';
-  var sqlFields = fields ? fields.join(',') + "," : "";
-  var type = " '" + (customType ?? table) + "'" + ' AS "TYPE", ';
+  var sqlFields = fields ? fields.join(',') + ',' : '';
+  var type = ' \'' + (customType ?? table) + '\'' + ' AS "TYPE", ';
   var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS "TITLE", ' : '';
   var searchString;
   var limit = queryOptions.limit ? ' LIMIT ' + queryOptions.limit.toString() + ' ' : '';

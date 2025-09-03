@@ -5,13 +5,13 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
   var condition = queryString;
   var sqlSearchFields;
   var sqlSearchFieldsFilter;
-  if (queryOptions.searchField) {
-    sqlSearchFields = "CAST(" + queryOptions.searchField + " AS varchar(255)) AS NAMN,";
-    sqlSearchFieldsFilter = "LOWER(" + queryOptions.searchField + ") LIKE LOWER('" + condition + "%')";
+  if (queryOptions.searchField || queryOptions.searchFields?.length === 1) {
+    sqlSearchFields = queryOptions.searchField || queryOptions.searchFields[0];
+    sqlSearchFieldsFilter = "LOWER(" + (queryOptions.searchField || queryOptions.searchFields[0]) + ") LIKE LOWER('" + condition + "%')";
   } else if (queryOptions.searchFields?.filter((field) => field)) {
-    sqlSearchFields = "CONCAT(STUFF(CONCAT_WS(', ', " + queryOptions.searchFields.filter((field) => field).join(", ") + "), LEN(COALESCE(" +
-      queryOptions.searchFields.filter((field) => field).join(", ") +
-      ")) + 1, 2, ' ('), ')') AS NAMN,";
+    sqlSearchFields = "CONCAT(STUFF(CONCAT_WS(', ', " + queryOptions.searchFields.filter((field) => field).join(", ") + "), LEN(COALESCE(CAST(" +
+      queryOptions.searchFields.filter((field) => field).join(" AS varchar), CAST(") +
+      " AS varchar))) + 1, 2, ' ('), ')')";
     sqlSearchFieldsFilter = "LOWER(" + 
       queryOptions.searchFields.filter((field) => field).join(") LIKE LOWER('" + condition + "%') OR LOWER(") + 
       ") LIKE LOWER('" + condition + "%')";
@@ -30,7 +30,7 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
 
   searchString =
     "SELECT " + limit +
-    sqlSearchFields + 
+    sqlSearchFields + " AS NAMN," +
     sqlFields +
     type +
     title +

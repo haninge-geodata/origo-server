@@ -67,7 +67,7 @@ module.exports = {
       },
       search: {
         search: {
-           tags: ["default"], // Sub-models which include any tags supplied in the query parameter 'tags' (e g origoserver/search?tags=tag1,tag2,etc) will be queried.
+           tags: ["default"], // Sub-models which include any tags supplied in the query parameter 'tags' (e g origoserver/search?tags=tag1,tag2,etc) will be queried.          
            // Add a reference to the connector if using more than one.
            // connector: 'pg',
            tables: [
@@ -82,7 +82,7 @@ module.exports = {
               },
               {
                  table: 'Adresser',
-                 searchField: 'NAMN',
+                 searchFields: ['NAMN', 'POSTNR'],
                  schema: 'public',
                  geometryName: 'geom',
                  gid: 'OBJECTID'
