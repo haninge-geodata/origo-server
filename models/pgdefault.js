@@ -1,6 +1,7 @@
-var pgDefault = function pgDefault(queryString, queryOptions, defaultLimit) {
+var pgDefault = function pgDefault(queryString, queryOptions) {
   var schema = queryOptions.schema;
   var table = queryOptions.table;
+  var customType = queryOptions.customType;
   var gid = queryOptions.gid || 'gid';
   var condition = queryString;
   var sqlSearchFields;
@@ -30,10 +31,10 @@ var pgDefault = function pgDefault(queryString, queryOptions, defaultLimit) {
   var wkt = useCentroid ? 'ST_AsText(ST_PointOnSurface(' + table + '."' + geometryField + '")) AS "GEOM" ' :
     'ST_AsText("' + table + '"."' + geometryField + '") AS "GEOM" ';
   var sqlFields = fields ? fields.join(',') + ',' : '';
-  var type = ' \'' + table + '\'' + ' AS "TYPE", ';
+  var type = ' \'' + (customType ?? table) + '\'' + ' AS "TYPE", ';
+  var title = queryOptions.title ? " '" + queryOptions.title + "'" + ' AS "TITLE", ' : '';
   var searchString;
-  var limitNumber = queryOptions.limit || defaultLimit || 1000;
-  var limit = ' LIMIT ' + limitNumber.toString() + ' ';
+  var limit = queryOptions.limit ? ' LIMIT ' + queryOptions.limit.toString() + ' ' : '';
 
   searchString =
     'SELECT ' +
@@ -41,6 +42,7 @@ var pgDefault = function pgDefault(queryString, queryOptions, defaultLimit) {
     ' "' + table + '"."' + gid + '" AS "GID", ' +
     sqlFields +
     type +
+    title +
     wkt +
     ' FROM ' + schema + '."' + table + '"' +
     ' WHERE ' + sqlSearchFieldsFilter +
