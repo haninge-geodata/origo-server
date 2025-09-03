@@ -3,17 +3,18 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
   var database = queryOptions.database;
   var table = queryOptions.table;
   var condition = queryString;
+  var useInitialWildcard = queryOptions.hasOwnProperty("useInitialWildcard") ? queryOptions.useInitialWildcard : false;
   var sqlSearchFields;
   var sqlSearchFieldsFilter;
   if (queryOptions.searchField || queryOptions.searchFields?.length === 1) {
     sqlSearchFields = queryOptions.searchField || queryOptions.searchFields[0];
-    sqlSearchFieldsFilter = "LOWER(" + (queryOptions.searchField || queryOptions.searchFields[0]) + ") LIKE LOWER('" + condition + "%')";
+    sqlSearchFieldsFilter = "LOWER(" + (queryOptions.searchField || queryOptions.searchFields[0]) + ") LIKE LOWER('" + (useInitialWildcard ? "%" : "") + condition + "%')";
   } else if (queryOptions.searchFields?.filter((field) => field)) {
     sqlSearchFields = "CONCAT(STUFF(CONCAT_WS(', ', " + queryOptions.searchFields.filter((field) => field).join(", ") + "), LEN(COALESCE(CAST(" +
       queryOptions.searchFields.filter((field) => field).join(" AS varchar), CAST(") +
       " AS varchar))) + 1, 2, ' ('), ')')";
     sqlSearchFieldsFilter = "LOWER(" + 
-      queryOptions.searchFields.filter((field) => field).join(") LIKE LOWER('" + condition + "%') OR LOWER(") + 
+      queryOptions.searchFields.filter((field) => field).join(") LIKE LOWER('" + (useInitialWildcard ? "%" : "") + condition + "%') OR LOWER(") + 
       ") LIKE LOWER('" + condition + "%')";
   }
   var customType = queryOptions.customType;

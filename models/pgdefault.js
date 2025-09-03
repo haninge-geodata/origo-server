@@ -4,11 +4,12 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
   var customType = queryOptions.customType;
   var gid = queryOptions.gid || 'gid';
   var condition = queryString;
+  var useInitialWildcard = queryOptions.hasOwnProperty("useInitialWildcard") ? queryOptions.useInitialWildcard : false;
   var sqlSearchFields;
   var sqlSearchFieldsFilter;
   if (queryOptions.searchField || queryOptions.searchFields?.length === 1) {
     sqlSearchFields = 'CAST("' + table + '"."' + (queryOptions.searchField || queryOptions.searchFields[0]) + '" AS TEXT)';
-    sqlSearchFieldsFilter = 'LOWER(' + sqlSearchFields + ') ILIKE LOWER(\'' + condition + '%\')';
+    sqlSearchFieldsFilter = 'LOWER(' + sqlSearchFields + ') ILIKE LOWER(\'' + (useInitialWildcard ? '%' : '') + condition + '%\')';
   } else if (queryOptions.searchFields?.filter((field) => field)) {
     sqlSearchFields = 'CONCAT(overlay(CONCAT_WS(\', \', ' + 
       queryOptions.searchFields.filter((field) => field)
@@ -22,12 +23,12 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
     sqlSearchFieldsFilter = 'LOWER(' + 
       queryOptions.searchFields.filter((e) => e)
         .map((field) => 'CAST("' + table + '"."' + field + '" AS TEXT)')
-        .join(') LIKE LOWER(\'' + condition + '%\') OR LOWER(') + 
-      ') LIKE LOWER(\'' + condition + '%\')';
+        .join(') LIKE LOWER(\'' + (useInitialWildcard ? '%' : '') + condition + '%\') OR LOWER(') + 
+      ') LIKE LOWER(\'' + (useInitialWildcard ? '%' : '') + condition + '%\')';
   }
   var fields = queryOptions.fields;
-  var geometryField = queryOptions.geometryName || 'geom';
-  var useCentroid = queryOptions.hasOwnProperty('useCentroid') ? queryOptions.useCentroid : true;
+  var geometryField = queryOptions.geometryName || "geom";
+  var useCentroid = queryOptions.hasOwnProperty("useCentroid") ? queryOptions.useCentroid : true;
   var wkt = useCentroid ? 'ST_AsText(ST_PointOnSurface(' + table + '."' + geometryField + '")) AS "GEOM" ' :
     'ST_AsText("' + table + '"."' + geometryField + '") AS "GEOM" ';
   var sqlFields = fields ? fields.join(',') + ',' : '';
