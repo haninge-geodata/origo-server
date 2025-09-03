@@ -8,6 +8,7 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
   var fields = queryOptions.fields;
   var geometryField = queryOptions.geometryName || "geom";
   var useCentroid = queryOptions.hasOwnProperty("useCentroid") ? queryOptions.useCentroid : true;
+  var useInitialWildcard = queryOptions.hasOwnProperty("useInitialWildcard") ? queryOptions.useInitialWildcard : false;
   var wkt = useCentroid ? geometryField + ".STPointOnSurface().ToString() AS GEOM " + " " :
     geometryField + ".ToString() AS GEOM " + " ";
   var sqlFields = fields ? fields.join(',') + "," : "";
@@ -25,7 +26,7 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
     title +
     wkt +
     " FROM " + database + "." + schema + "." + table +
-    " WHERE LOWER(" + searchField + ") LIKE LOWER('" + condition + "%')" + " " +
+    " WHERE LOWER(" + searchField + ") LIKE LOWER('" + (useInitialWildcard ? "%" : "") + condition + "%')" + " " +
     " ORDER BY " + searchField + "";
 
   return searchString;

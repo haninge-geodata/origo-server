@@ -8,6 +8,7 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
   var fields = queryOptions.fields;
   var geometryField = queryOptions.geometryName || "geom";
   var useCentroid = queryOptions.hasOwnProperty("useCentroid") ? queryOptions.useCentroid : true;
+  var useInitialWildcard = queryOptions.hasOwnProperty("useInitialWildcard") ? queryOptions.useInitialWildcard : false;
   var wkt = useCentroid ? 'ST_AsText(ST_PointOnSurface(' + table + '."' + geometryField + '")) AS "GEOM" ' :
     'ST_AsText("' + table + '"."' + geometryField + '") AS "GEOM" ';
   var sqlFields = fields ? fields.join(',') + "," : "";
@@ -26,7 +27,7 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
     title +
     wkt +
     ' FROM ' + schema + '."' + table + '"' +
-    ' WHERE LOWER(CAST("' + table + '"."' + searchField + '"' + " AS TEXT)) ILIKE LOWER('" + condition + "%')" +
+    ' WHERE LOWER(CAST("' + table + '"."' + searchField + '"' + " AS TEXT)) ILIKE LOWER('" + (useInitialWildcard ? '%' : '') + condition + "%')" +
     ' ORDER BY "' + table + '"."' + searchField + '"' +
     limit + ';';
 
