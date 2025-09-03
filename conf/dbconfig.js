@@ -81,7 +81,7 @@ module.exports = {
             },
             {
               table: 'Adresser',
-              searchField: 'NAMN',
+              searchFields: ['NAMN', 'POSTNR'],
               schema: 'public',
               geometryName: 'geom',
               gid: 'OBJECTID'
