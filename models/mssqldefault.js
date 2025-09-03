@@ -5,9 +5,9 @@ var mssqlDefault = function mssqlDefault(queryString, queryOptions) {
   var condition = queryString;
   var sqlSearchFields;
   var sqlSearchFieldsFilter;
-  if (queryOptions.searchField) {
-    sqlSearchFields = queryOptions.searchField;
-    sqlSearchFieldsFilter = "LOWER(" + queryOptions.searchField + ") LIKE LOWER('" + condition + "%')";
+  if (queryOptions.searchField || queryOptions.searchFields?.length === 1) {
+    sqlSearchFields = queryOptions.searchField || queryOptions.searchFields[0];
+    sqlSearchFieldsFilter = "LOWER(" + (queryOptions.searchField || queryOptions.searchFields[0]) + ") LIKE LOWER('" + condition + "%')";
   } else if (queryOptions.searchFields?.filter((field) => field)) {
     sqlSearchFields = "CONCAT(STUFF(CONCAT_WS(', ', " + queryOptions.searchFields.filter((field) => field).join(", ") + "), LEN(COALESCE(" +
       queryOptions.searchFields.filter((field) => field).join(", ") +

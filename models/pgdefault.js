@@ -6,8 +6,8 @@ var pgDefault = function pgDefault(queryString, queryOptions) {
   var condition = queryString;
   var sqlSearchFields;
   var sqlSearchFieldsFilter;
-  if (queryOptions.searchField) {
-    sqlSearchFields = 'CAST("' + table + '"."' + queryOptions.searchField + '" AS TEXT)';
+  if (queryOptions.searchField || queryOptions.searchFields?.length === 1) {
+    sqlSearchFields = 'CAST("' + table + '"."' + (queryOptions.searchField || queryOptions.searchFields[0]) + '" AS TEXT)';
     sqlSearchFieldsFilter = 'LOWER(' + sqlSearchFields + ') ILIKE LOWER(\'' + condition + '%\')';
   } else if (queryOptions.searchFields?.filter((field) => field)) {
     sqlSearchFields = 'CONCAT(overlay(CONCAT_WS(\', \', ' + 
